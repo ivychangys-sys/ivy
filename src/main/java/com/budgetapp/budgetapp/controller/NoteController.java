@@ -1,36 +1,51 @@
 package com.budgetapp.budgetapp.controller;
 
+import com.budgetapp.budgetapp.dto.NoteDTO;
 import com.budgetapp.budgetapp.entity.Note;
-import com.budgetapp.budgetapp.service.NoteService;
+import com.budgetapp.budgetapp.repository.NoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/notes")
 public class NoteController {
 
     @Autowired
-    private NoteService noteService;
+    private NoteRepository noteRepository;
 
     @GetMapping
-    public ResponseEntity<List<Note>> getNotes(@RequestHeader("token") String token) {
-        List<Note> notes = noteService.getNotesByToken(token);
-        return ResponseEntity.ok(notes);
+    public List<NoteDTO> getAllNotes() {
+        return noteRepository.findAll()
+                .stream()
+                .map(NoteDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/{id}")
+    public NoteDTO getNoteById(@PathVariable Long id) {
+        Note note = noteRepository.findById(id).orElseThrow();
+        return new NoteDTO(note);
     }
 
     @PostMapping
-    public ResponseEntity<?> createNote(@RequestBody Note note, @RequestHeader("token") String token) {
-        noteService.createNote(note, token);
-        return ResponseEntity.ok("Note created successfully.");
+    public Note createNote(@RequestBody Note note) {
+        return noteRepository.save(note);
     }
-    
+
+    @PutMapping("/{id}")
+    public Note updateNote(@PathVariable Long id, @RequestBody Note noteDetails) {
+        Note note = noteRepository.findById(id).orElseThrow();
+        note.setTitle(noteDetails.getTitle());
+        note.setContent(noteDetails.getContent());
+        note.setFolder(noteDetails.getFolder());
+        return noteRepository.save(note);
+    }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteNote(@PathVariable Long id, @RequestHeader("token") String token) {
-        noteService.deleteNote(id, token);
-        return ResponseEntity.ok("Note deleted successfully.");
+    public void deleteNote(@PathVariable Long id) {
+        noteRepository.deleteById(id);
     }
 }
