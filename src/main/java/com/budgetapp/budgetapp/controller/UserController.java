@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/users") 
+@RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
@@ -30,7 +30,7 @@ public class UserController {
         return ResponseEntity.ok("User created successfully.");
     }
 
-    @GetMapping("/login")
+    @GetMapping
     public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password) {
         Optional<User> optionalUser = userRepository.findByUsername(username);
 
@@ -50,7 +50,7 @@ public class UserController {
         return ResponseEntity.ok(token);
     }
 
-    @DeleteMapping("/token")
+    @DeleteMapping
     public ResponseEntity<?> deleteToken(@RequestParam String token) {
         Optional<User> optionalUser = userRepository.findByAccessToken(token);
 

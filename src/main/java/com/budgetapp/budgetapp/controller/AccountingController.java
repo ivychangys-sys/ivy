@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/accounting")
+@RequestMapping("/api/accounting")
 public class AccountingController {
 
     @Autowired
