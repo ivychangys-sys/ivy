@@ -22,7 +22,8 @@ public class AccountingController {
     private UserRepository userRepository;
 
     private User getCurrentUser(String accessToken) {
-        return userRepository.findByAccessToken(accessToken).orElseThrow(() -> new RuntimeException("User not found"));
+        return userRepository.findByAccessToken(accessToken)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @GetMapping
@@ -53,6 +54,17 @@ public class AccountingController {
         });
 
         return result;
+    }
+
+    @PostMapping
+    public AccountingDTO create(
+            @RequestHeader("Authorization") String token,
+            @RequestBody Accounting accounting
+    ) {
+        User user = getCurrentUser(token);
+        accounting.setUser(user);
+        Accounting saved = accountingRepository.save(accounting);
+        return new AccountingDTO(saved);
     }
 
     @GetMapping("/ping")

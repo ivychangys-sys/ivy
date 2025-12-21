@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/notes")
@@ -21,27 +20,36 @@ public class NoteController {
         return noteRepository.findAll()
                 .stream()
                 .map(NoteDTO::new)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @GetMapping("/{id}")
     public NoteDTO getNoteById(@PathVariable Long id) {
-        Note note = noteRepository.findById(id).orElseThrow();
+        Note note = noteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Note not found"));
         return new NoteDTO(note);
     }
 
     @PostMapping
-    public Note createNote(@RequestBody Note note) {
-        return noteRepository.save(note);
+    public NoteDTO createNote(@RequestBody Note note) {
+        Note saved = noteRepository.save(note);
+        return new NoteDTO(saved);
     }
 
     @PutMapping("/{id}")
-    public Note updateNote(@PathVariable Long id, @RequestBody Note noteDetails) {
-        Note note = noteRepository.findById(id).orElseThrow();
+    public NoteDTO updateNote(
+            @PathVariable Long id,
+            @RequestBody Note noteDetails
+    ) {
+        Note note = noteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Note not found"));
+
         note.setTitle(noteDetails.getTitle());
         note.setContent(noteDetails.getContent());
         note.setFolder(noteDetails.getFolder());
-        return noteRepository.save(note);
+
+        Note saved = noteRepository.save(note);
+        return new NoteDTO(saved);
     }
 
     @DeleteMapping("/{id}")

@@ -4,28 +4,33 @@ import com.budgetapp.budgetapp.entity.Note;
 
 public class NoteDTO {
 
-    private Long id;
-    private String title;
-    private String content;
+    private String key;
+
+    private String label;
+
+    private String data;
+
     private String folder;
 
     public NoteDTO(Note note) {
-        this.id = note.getId();
-        this.title = note.getTitle();
-        this.content = note.getContent();
-        this.folder = note.getFolder() != null ? note.getFolder() : "Uncategorized";
+        this.key = String.valueOf(note.getId());
+        this.label = note.getTitle();
+        this.data = note.getContent();
+        this.folder = note.getFolder() != null
+                ? note.getFolder()
+                : "Uncategorized";
     }
 
-    public Long getId() {
-        return id;
+    public String getKey() {
+        return key;
     }
 
-    public String getTitle() {
-        return title;
+    public String getLabel() {
+        return label;
     }
 
-    public String getContent() {
-        return content;
+    public String getData() {
+        return data;
     }
 
     public String getFolder() {
